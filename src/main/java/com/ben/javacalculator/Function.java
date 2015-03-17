@@ -1,11 +1,14 @@
 package com.ben.javacalculator;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Class made to parse an equation
  * made up of Expressions with infinite recursiveness
  * @author Ben Rasmussen
  */
-public class Function extends FunctionPart {
+public class Function extends FunctionPart{
 	private ArrayListMod<FunctionPart> innerParts;
 	private boolean inverse, carrot;
 	private Function power;
@@ -45,11 +48,23 @@ public class Function extends FunctionPart {
 		if (task.equals("d/dx")) {
 			return new Function(calcDerivative()).simplify();
 		} else {
-			return new Function("" + new Function(this).calcValue(""));
+			return new Function("" + new Function(this).calcValue());
 		}
 	}
+	public ArrayListMod<String> getDimensions() {
+		ArrayListMod<String> vars = new ArrayListMod<>();
 
+		for (FunctionPart f: innerParts) {
+			vars.addAll(f.getDimensions());
+		}
 
+		List<String> listWithoutDuplicates =
+				vars.parallelStream().distinct().collect(Collectors.toList());
+
+		vars = new ArrayListMod<>(listWithoutDuplicates);
+
+		return vars;
+	}
 
 	public boolean isAlgebraic() {
 		boolean algebraic = false;
@@ -62,6 +77,10 @@ public class Function extends FunctionPart {
 
 	public ArrayListMod<FunctionPart> calcDerivative() {
 		return CalculusEngine.calcDerivative(this);
+	}
+
+	public String calcValue() {
+		return calcValue("x=" + Main.variables[(int)'x']);
 	}
 
 	public String calcValue(String input) {

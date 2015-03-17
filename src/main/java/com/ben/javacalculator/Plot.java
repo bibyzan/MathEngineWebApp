@@ -1,5 +1,7 @@
 package com.ben.javacalculator;
 
+import java.awt.*;
+
 /**
  * Class containing as many Points needed
  * in order to draw a graph as indicated by
@@ -10,13 +12,14 @@ public class Plot {
 	private ArrayListMod<Point> curve;
 	private Function function;
 	private Graph graph;
-	private boolean enabled;
+	private boolean enabled, threeDimensional;
 
 	public Plot(Function function, Graph graph) {
 		this.function = function;
 		this.graph = graph;
-		this.curve = new ArrayListMod<Point>();
+		this.curve = new ArrayListMod<>();
 		this.enabled = true;
+		this.threeDimensional = function.getDimensions().size() == 2;
 		calcCurve();
 	}
 
@@ -29,9 +32,18 @@ public class Plot {
 
 	public void calcCurve() {
 		curve.clear();
-		for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
-			Point newPoint = new Point(x, Double.parseDouble(function.calcValue("x=" + Double.toString(x))));
-			curve.add(newPoint);
+		if (threeDimensional) {
+			for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
+				for (double y = getGraph().getBottomBound(); y <= graph.getTopBound(); y += .0001) {
+					curve.add(new Point(x, y, Double.parseDouble(
+							function.calcValue("x=" + Double.toString(x) + ",y=" + Double.toString(y)))));
+				}
+			}
+		} else {
+			for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
+				Point newPoint = new Point(x, Double.parseDouble(function.calcValue("x=" + Double.toString(x))));
+				curve.add(newPoint);
+			}
 		}
 	}
 
@@ -44,6 +56,11 @@ public class Plot {
 		}
 
 		return tablePoints;
+	}
+
+	public void drawSwingGraphics(Graphics g) {
+		for (Point p: curve)
+			p.swingGraphic(g);
 	}
 
 	public ArrayListMod<Point> getCurve() {

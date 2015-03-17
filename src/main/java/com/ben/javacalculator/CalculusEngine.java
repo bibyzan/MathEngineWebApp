@@ -1,5 +1,7 @@
 package com.ben.javacalculator;
 
+import java.util.ArrayList;
+
 /**
  * class made to utilize the FunctionPart classes
  * and return calculations as requested by user

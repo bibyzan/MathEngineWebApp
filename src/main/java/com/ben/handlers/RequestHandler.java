@@ -1,5 +1,6 @@
 package com.ben.handlers;
 
+import com.ben.javacalculator.Equation;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerTemplateEngine;
 
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static spark.Spark.get;
+import static spark.Spark.post;
 import static spark.SparkBase.setPort;
 
 /**
@@ -21,5 +23,11 @@ public class RequestHandler {
 			attributes.put("message", "Buster Brown");
 			return new ModelAndView(attributes, "hello.ftl");
 		}, new FreeMarkerTemplateEngine());
+
+		post("/calculate", "application/json",(request,response) -> {
+			Equation equation = new Equation(request.params("equation"));
+			response.type("application/json");
+			return equation.toString();
+		});
 	}
 }

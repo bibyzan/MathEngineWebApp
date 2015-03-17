@@ -46,6 +46,10 @@ public class Variable {
 		}
 	}
 
+	public char getLetterChar() {
+		return letter.toCharArray()[0];
+	}
+
 	public boolean isCarrot() {
 		return carrot;
 	}

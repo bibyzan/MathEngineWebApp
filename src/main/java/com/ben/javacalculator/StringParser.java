@@ -16,6 +16,7 @@ public class StringParser {
 		for (String s: noSpaces) text += s;
 
 		if (text.split(">>").length > 1) {
+			Main.variables[(int) text.toCharArray()[0]] = Double.parseDouble(text.split(">>")[1]);
 			result.setRightSide(new Function(text.split(">>")[1]).toArrayListMod());
 			result.setLeftSide(new ArrayListMod<FunctionPart>(new FunctionMessage(text.split(">>")[0])));
 			result.setAlgebraic(true);

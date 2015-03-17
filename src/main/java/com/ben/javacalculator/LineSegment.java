@@ -1,5 +1,7 @@
 package com.ben.javacalculator;
 
+import java.awt.*;
+
 /**
  * Class consisting of 2 points,
  * a beginning point, and an end point,
@@ -62,6 +64,10 @@ public class LineSegment {
 		yi = (a.findSlope()*xi)+a.findYint();
 
 		return new Point((int)xi,(int)yi);
+	}
+
+	public void drawSwingGraphic(Graphics g){
+		g.drawLine((int)bp.getX(),(int)bp.getY(),(int)ep.getX(),(int)ep.getY());
 	}
 
 	@Override

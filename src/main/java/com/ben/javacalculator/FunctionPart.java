@@ -1,5 +1,7 @@
 package com.ben.javacalculator;
 
+import java.util.ArrayList;
+
 /**
  * Parent class of the Function and Expression classes,
  * made for the possibility of having functions within
@@ -16,8 +18,14 @@ public abstract class FunctionPart {
 		task = "";
 	}
 
+	public java.util.List<String> getDimensions() { return null; }
+
 	public boolean isAlgebraic() {
 		return false;
+	}
+
+	public String calcValue() {
+		return calcValue("x=" + Main.variables[(int)'x']);
 	}
 
 	public String calcValue(String input) {

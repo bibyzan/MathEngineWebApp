@@ -1,11 +1,13 @@
 package com.ben.javacalculator;
 
+import java.util.stream.Collectors;
+
 /**
  * Expressions are the individual building blocks for
  * functions, and eventually Equations as indicated in those classes
  * @author Ben Rasmussen
  */
-public class Expression extends FunctionPart {
+public class Expression extends FunctionPart{
 	private double value;
 	private String functionIdentity;
 	private ArrayListMod<Variable> variables;
@@ -46,6 +48,11 @@ public class Expression extends FunctionPart {
 		variables = e.getVariables();
 	}
 
+	public ArrayListMod<String> getDimensions() {
+		return variables.stream().map(Variable::getLetter)
+				.collect(Collectors.toCollection(ArrayListMod::new));
+	}
+
 	public Expression(String text) {
 		this(StringParser.getExpressionFromString(text));
 	}
@@ -56,6 +63,11 @@ public class Expression extends FunctionPart {
 
 	public boolean isRegularFunction() {
 		return !variable && !e && !function && !carrot;
+	}
+
+	@Override
+	public String calcValue() {
+		return calcValue("");
 	}
 
 	@Override
@@ -157,7 +169,7 @@ public class Expression extends FunctionPart {
 					else
 						temp += innerFunction + ")";
 
-		if (carrot && !power.calcValue("").equals("1"))
+		if (carrot && !power.calcValue().equals("1"))
 			if (power.toString().substring(0,1).equals("+"))
 				temp += "^" + power.toString().substring(1);
 			else

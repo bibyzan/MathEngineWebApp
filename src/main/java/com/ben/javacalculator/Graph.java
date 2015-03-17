@@ -1,5 +1,8 @@
 package com.ben.javacalculator;
 
+import javax.swing.*;
+import java.awt.*;
+
 /**
  * Class that includes a converter from
  * the cartesian plane, to the screen coordinate system.
@@ -40,23 +43,23 @@ public class Graph {
 		plots.add(new Plot(f, this));
 	}
 
-	public void drawSwingGraphics() {
+	public void drawSwingGraphics(Graphics g) {
 		for (Plot p: plots)
 			if (p.isEnabled())
-
+				currentScreen.convertPlot(p).drawSwingGraphics(g);
 
 		currentScreen.convertLineSegment(
-			new LineSegment(new Point(leftBound, 0), new Point(rightBound,0)));
+			new LineSegment(new Point(leftBound, 0), new Point(rightBound,0))).drawSwingGraphic(g);
 		currentScreen.convertLineSegment(
-			new LineSegment(new Point(0, topBound), new Point(0, bottomBound)));
+			new LineSegment(new Point(0, topBound), new Point(0, bottomBound))).drawSwingGraphic(g);
 
 		for (double x = leftBound; x <= rightBound; x+= xScale)
 			currentScreen.convertLineSegment(
-				new LineSegment(new Point(x, .25), new Point(x, -.25)));
+				new LineSegment(new Point(x, .25), new Point(x, -.25))).drawSwingGraphic(g);
 
 		for (double y = bottomBound; y <= topBound; y+= yScale)
 			currentScreen.convertLineSegment(
-				new LineSegment(new Point(.25,y), new Point(-.25, y)));
+				new LineSegment(new Point(.25,y), new Point(-.25, y))).drawSwingGraphic(g);
 	}
 
 	public double xAxisRange() {
@@ -137,6 +140,11 @@ public class Graph {
 		public ScreenConverter(int width, int height) {
 			this.width = width;
 			this.height = height;
+		}
+
+		public ScreenConverter(JFrame frame) {
+			width = frame.getWidth();
+			height = frame.getHeight();
 		}
 
 		public Point convertPoint(Point p) {
