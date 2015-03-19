@@ -17,19 +17,16 @@ public class GraphWindow extends JFrame{
 	private JButton refresh;
 	private JTextField textField;
 	private JScrollPane scrollPane;
+	private Graph graph;
 	private int counter;
 
-	public GraphWindow() {
+	public GraphWindow(Graph g) {
 		Container container = this.getContentPane();
+		graph = g;
 		refresh = new JButton("refresh");
-		refresh.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) { graphPanel.repaint(); } });
+		refresh.addActionListener(e -> graphPanel.repaint());
 		graphPanel = new GraphPanel();
 		functionsPanel = new JPanel();
-		textField = new JTextField(10);
-		textField.addKeyListener(new EnterKeyListener());
-		//functionsPanel.add(textField);
 		graphPanel.add(refresh);
 		counter = 1;
 
@@ -52,22 +49,9 @@ public class GraphWindow extends JFrame{
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			Main.graph.drawSwingGraphics(g);
+			graph.drawSwingGraphics(g);
 		}
 	}
-
-	private class EnterKeyListener extends KeyAdapter {
-		@Override
-		public void keyPressed(KeyEvent e) {
-			super.keyTyped(e);
-			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				Main.graph.addPlot(new Function(textField.getText()));
-				graphPanel.repaint();
-				textField.setText("");
-			}
-		}
-	}
-
 
 	private class ResizeWindowListener extends ComponentAdapter {
 		@Override

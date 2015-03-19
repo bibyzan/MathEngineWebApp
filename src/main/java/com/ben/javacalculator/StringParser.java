@@ -15,27 +15,18 @@ public class StringParser {
 		text = "";
 		for (String s: noSpaces) text += s;
 
-		if (text.split(">>").length > 1) {
-			Main.variables[(int) text.toCharArray()[0]] = Double.parseDouble(text.split(">>")[1]);
-			result.setRightSide(new Function(text.split(">>")[1]).toArrayListMod());
-			result.setLeftSide(new ArrayListMod<FunctionPart>(new FunctionMessage(text.split(">>")[0])));
-			result.setAlgebraic(true);
-			return result;
-		}
-
 		String[] inputs = text.split(";");
 		if (inputs.length > 1)
 			result.setInputField(inputs[1]);
 
 		String[] sides = inputs[0].split("=");
-		result.addToLeft(new Function(sides[0]));
+		result.setLeftSide(new Function(sides[0]));
 		if (sides.length > 1)
-			result.addToRight(new Function(sides[1]));
+			result.setRightSide(new Function(sides[1]));
 
-		ArrayListMod<FunctionPart> all = new ArrayListMod<FunctionPart>(result.getLeftSide());
-		all.addAll(result.getRightSide());
-		for (FunctionPart f: all)
-			result.setAlgebraic(f.isAlgebraic());
+		Function all = new Function(result.getLeftSide());
+		all.add(result.getRightSide());
+		all.stream().filter(FunctionPart::isAlgebraic).forEach(f -> result.setAlgebraic(true));
 
 		return result;
 	}

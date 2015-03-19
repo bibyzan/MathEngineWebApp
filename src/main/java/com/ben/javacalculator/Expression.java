@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
  * functions, and eventually Equations as indicated in those classes
  * @author Ben Rasmussen
  */
-public class Expression extends FunctionPart{
+public class Expression implements FunctionPart{
 	private double value;
 	private String functionIdentity;
 	private ArrayListMod<Variable> variables;
-	private boolean variable, e, carrot, function;
+	private boolean variable, e, carrot, function, factor, numerator;
 	private Function power, innerFunction;
 
 	//default setter
@@ -22,7 +22,7 @@ public class Expression extends FunctionPart{
 		e = false;
 		carrot = false;
 		function = false;
-		variables = new ArrayListMod<Variable>();
+		variables = new ArrayListMod<>();
 		innerFunction = new Function();
 		power = new Function();
 		functionIdentity = "";
@@ -53,6 +53,26 @@ public class Expression extends FunctionPart{
 				.collect(Collectors.toCollection(ArrayListMod::new));
 	}
 
+	@Override
+	public boolean isFactor() {
+		return factor;
+	}
+
+	@Override
+	public void setFactor(boolean factor) {
+		this.factor = factor;
+	}
+
+	@Override
+	public boolean isNumerator() {
+		return numerator;
+	}
+
+	@Override
+	public void setNumerator(boolean numerator) {
+		this.numerator = numerator;
+	}
+
 	public Expression(String text) {
 		this(StringParser.getExpressionFromString(text));
 	}
@@ -63,11 +83,6 @@ public class Expression extends FunctionPart{
 
 	public boolean isRegularFunction() {
 		return !variable && !e && !function && !carrot;
-	}
-
-	@Override
-	public String calcValue() {
-		return calcValue("");
 	}
 
 	@Override
@@ -115,7 +130,6 @@ public class Expression extends FunctionPart{
 		return number + str;
 	}
 
-	@Override
 	public ArrayListMod<FunctionPart> multiply(FunctionPart f) {
 		ArrayListMod<FunctionPart> product = new ArrayListMod<FunctionPart>();
 
@@ -133,7 +147,6 @@ public class Expression extends FunctionPart{
 		return innerFunction.isAlgebraic() || power.isAlgebraic() || variable;
 	}
 
-	@Override
 	public ArrayListMod<FunctionPart> calcDerivative(){
 		return CalculusEngine.calcDerivative(this);
 	}
@@ -169,7 +182,7 @@ public class Expression extends FunctionPart{
 					else
 						temp += innerFunction + ")";
 
-		if (carrot && !power.calcValue().equals("1"))
+		if (carrot && !power.calcValue("").equals("1"))
 			if (power.toString().substring(0,1).equals("+"))
 				temp += "^" + power.toString().substring(1);
 			else

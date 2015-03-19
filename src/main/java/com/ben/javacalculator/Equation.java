@@ -8,14 +8,14 @@ package com.ben.javacalculator;
  */
 public class Equation {
 	private boolean algebraic;
-	private ArrayListMod<FunctionPart> leftSide, rightSide;
-	private String inputField;
+	private Function leftSide, rightSide, functionOf;
+	private String inputField, inTermsOf;
 
 	public Equation() {
 		algebraic = false;
 		inputField = "";
-		leftSide = new ArrayListMod<FunctionPart>();
-		rightSide = new ArrayListMod<FunctionPart>();
+		leftSide = new Function();
+		rightSide = new Function();
 	}
 
 	public Equation(Equation e) {
@@ -39,6 +39,19 @@ public class Equation {
 		} else if (containsInput()) {
 			rightSide.add(new Function(new Function(leftSide).calcValue(inputField)));
 			rightSide.add(new FunctionMessage("; " + inputField));
+		} else if (rightSide.size() > 0 && algebraic) {
+			String var = leftSide.getDimensions().get(0);
+			if (var.equals("y")||var.equals("x")||var.equals("z")) {
+				functionOf = new Function(rightSide);
+				inTermsOf = var;
+			}
+			var = rightSide.toString();
+			if (var.equals("y")||var.equals("x")||var.equals("z")) {
+				inTermsOf = var;
+				functionOf = new Function(leftSide);
+			}
+			Main.graph.addPlot(this);
+			rightSide.add(new FunctionMessage(" >> added to graph"));
 		} else {
 			rightSide.add(new Function(new Function(leftSide).calcValue("")));
 		}
@@ -49,11 +62,27 @@ public class Equation {
 		return leftSide + " = " + rightSide;
 	}
 
-	public ArrayListMod<FunctionPart> getLeftSide() {
+	public Function getFunctionOf() {
+		return functionOf;
+	}
+
+	public void setFunctionOf(Function functionOf) {
+		this.functionOf = functionOf;
+	}
+
+	public String getInTermsOf() {
+		return inTermsOf;
+	}
+
+	public void setInTermsOf(String inTermsOf) {
+		this.inTermsOf = inTermsOf;
+	}
+
+	public Function getLeftSide() {
 		return leftSide;
 	}
 
-	public void setLeftSide(ArrayListMod<FunctionPart> leftSide) {
+	public void setLeftSide(Function leftSide) {
 		this.leftSide = leftSide;
 	}
 
@@ -61,7 +90,7 @@ public class Equation {
 		leftSide.add(f);
 	}
 
-	public ArrayListMod<FunctionPart> getRightSide() {
+	public Function getRightSide() {
 		return rightSide;
 	}
 
@@ -69,7 +98,7 @@ public class Equation {
 		rightSide.add(f);
 	}
 
-	public void setRightSide(ArrayListMod<FunctionPart> rightSide) {
+	public void setRightSide(Function rightSide) {
 		this.rightSide = rightSide;
 	}
 

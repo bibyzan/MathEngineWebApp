@@ -79,7 +79,7 @@ public class FunctionTableWindow extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("Functions");
 
-		for (Plot p: Main.graph.getPlots()) {
+		for (Plot p: Main.graph) {
 			menu.add(new FunctionMenuItem(p));
 			counter++;
 		}
@@ -125,7 +125,7 @@ public class FunctionTableWindow extends JFrame {
 		public void keyPressed(KeyEvent e) {
 			super.keyTyped(e);
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				xAnswer.setText(currentPlot.getFunction().calcValue("x="+xTextField.getText()));
+				xAnswer.setText(currentPlot.getFunction().getFunctionOf().calcValue("x="+xTextField.getText()));
 			}
 		}
 	}

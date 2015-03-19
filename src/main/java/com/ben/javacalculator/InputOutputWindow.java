@@ -91,7 +91,7 @@ public class InputOutputWindow extends JFrame {
 			fw = new FileWriter("FunctionArchive.txt");
 			pw = new PrintWriter(fw);
 
-			for (Plot p: Main.graph.getPlots())
+			for (Plot p: Main.graph)
 				pw.println(p.getFunction().toString());
 
 			pw.close();
@@ -116,7 +116,7 @@ public class InputOutputWindow extends JFrame {
 			reader = new Scanner(new File("FunctionArchive.txt"));
 
 			while (reader.hasNext())
-				Main.graph.addPlot(new Function(reader.nextLine()));
+				Main.graph.addPlot(new Equation(reader.nextLine()));
 		} catch (FileNotFoundException e) {
 			center.add(new JLabel("empty history"));
 		}
@@ -173,6 +173,7 @@ public class InputOutputWindow extends JFrame {
 					currentAnswer.setText(equation.toString());
 					addEquation();
 				} catch (Exception x) {
+					x.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Sorry, try a different way of writing your equation");
 					textBox.setSelectionStart(0);
 					textBox.setSelectionEnd(textBox.getText().length());
@@ -223,7 +224,7 @@ public class InputOutputWindow extends JFrame {
 					} else if (e.getActionCommand().equals("y = ")) {
 						GraphFunctionsWindow graphFunctionsWindow = new GraphFunctionsWindow();
 					} else if (e.getActionCommand().equals("Graph")) {
-						GraphWindow graphWindow = new GraphWindow();
+						GraphWindow graphWindow = new GraphWindow(Main.graph);
 					} else if (e.getActionCommand().equals("Window")) {
 						GraphSettingsWindow graphSettingsWindow = new GraphSettingsWindow();
 					} else if (e.getActionCommand().equals("Table")) {
@@ -232,7 +233,7 @@ public class InputOutputWindow extends JFrame {
 						for (Frame frame: getFrames())
 							frame.setVisible(false);
 						center.removeAll();
-						Main.graph.getPlots().clear();
+						Main.graph.clear();
 						reopen();
 					} else if (e.getActionCommand().equals("Help/About")) {
 						Desktop dt = Desktop.getDesktop();

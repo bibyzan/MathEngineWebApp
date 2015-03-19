@@ -8,63 +8,20 @@ import java.util.ArrayList;
  * functions to the extent of which the user needs.
  * @author Ben Rasmussen
  */
-public abstract class FunctionPart {
-	protected boolean factor, numerator;
-	protected String task;
+public interface FunctionPart {
 
-	public FunctionPart() {
-		factor = false;
-		numerator = false;
-		task = "";
-	}
+	public java.util.List<String> getDimensions();
 
-	public java.util.List<String> getDimensions() { return null; }
+	public boolean isAlgebraic();
 
-	public boolean isAlgebraic() {
-		return false;
-	}
+	public String calcValue(String input);
 
-	public String calcValue() {
-		return calcValue("x=" + Main.variables[(int)'x']);
-	}
+	public boolean isFactor();
 
-	public String calcValue(String input) {
-		return "0";
-	}
+	public void setFactor(boolean factor);
 
-	public ArrayListMod<FunctionPart> calcDerivative() {
-		return null;
-	}
+	public boolean isNumerator();
 
-	public ArrayListMod<FunctionPart> multiply(FunctionPart f) {
-		return null;
-	}
+	public void setNumerator(boolean numerator);
 
-	public boolean isFactor() {
-		return factor;
-	}
-
-	public void setFactor(boolean factor) {
-		this.factor = factor;
-	}
-
-	public boolean isNumerator() {
-		return numerator;
-	}
-
-	public void setNumerator(boolean numerator) {
-		this.numerator = numerator;
-	}
-
-	public String getTask() {
-		return task;
-	}
-
-	public void setTask(String task) {
-		this.task = task;
-	}
-
-	public boolean hasTask() {
-		return !task.equals("");
-	}
 }

@@ -31,24 +31,20 @@ public class GraphFunctionsWindow extends JFrame {
 		bottomPanel = new JPanel();
 
 		JButton removePlots = new JButton("remove unchecked");
-		removePlots.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				for (int i = 0; i < Main.graph.getPlots().size(); i++) {
-					if (!Main.graph.getPlots().get(i).isEnabled()) {
-						Main.graph.getPlots().remove(i);
-						i--;
-					}
+		removePlots.addActionListener(e -> {
+			for (int i = 0; i < Main.graph.size(); i++) {
+				if (!Main.graph.get(i).isEnabled()) {
+					Main.graph.remove(i);
+					i--;
 				}
-				midPanel.removeAll();
-				counter = 1;
-				for (Plot p: Main.graph.getPlots()) addFunction(p);
-				pack();
 			}
+			midPanel.removeAll();
+			counter = 1;
+			Main.graph.forEach(this::addFunction);
+			pack();
 		});
 
-		for (Plot p: Main.graph.getPlots())
-			addFunction(p);
+		Main.graph.forEach(this::addFunction);
 
 		inputPanel.add(textField);
 		bottomPanel.add(removePlots);
@@ -73,17 +69,12 @@ public class GraphFunctionsWindow extends JFrame {
 		private Plot thisPlot;
 
 		public FunctionCheckbox(Plot p) {
-			super("y" + counter + "= " + p.getFunction().toString());
+			super(p.getFunction().getInTermsOf() + counter + "= " + p.getFunction().getFunctionOf());
 			this.thisPlot = p;
 			this.setFont(font);
 			this.setSelected(true);
 
-			this.addChangeListener(new ChangeListener() {
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					thisPlot.setEnabled(isSelected());
-				}
-			});
+			this.addChangeListener(e -> thisPlot.setEnabled(isSelected()));
 		}
 	}
 
@@ -93,9 +84,8 @@ public class GraphFunctionsWindow extends JFrame {
 			super.keyPressed(e);
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				try {
-					Function f = new Function(textField.getText());
-					Main.graph.addPlot(f);
-					addFunction(Main.graph.getPlots().getLastElement());
+					Equation f = new Equation(textField.getText());
+					addFunction(Main.graph.getLastElement());
 					textField.setText("");
 				} catch (Exception x) {
 					JOptionPane.showMessageDialog(null, "Sorry, try a different way of writing your equation");

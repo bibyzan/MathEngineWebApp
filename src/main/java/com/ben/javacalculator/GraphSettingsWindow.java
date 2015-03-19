@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
  * @author Ben Rasmussen
  */
 public class GraphSettingsWindow extends JFrame {
-	private JTextField xMin, xMax, xScale, yMin, yMax, yScale;
+	/*private JTextField xMin, xMax, xScale, yMin, yMax, yScale;
 
 	public GraphSettingsWindow() {
 		xMin = new JTextField("" + Main.graph.getLeftBound());
@@ -56,5 +56,5 @@ public class GraphSettingsWindow extends JFrame {
 		settings[5] = Double.parseDouble(yScale.getText());
 
 		Main.graph.setSettings(settings);
-	}
+	}*/
 }

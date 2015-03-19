@@ -21,12 +21,6 @@ public class ArrayListMod<E> extends ArrayList<E> {
 		super.add(e);
 	}
 
-	public void add(ArrayList<E> newArray) {
-		for (E e: newArray) {
-			super.add(e);
-		}
-	}
-
 	public String calcValue(String input) {
 		try {
 			String str = "";

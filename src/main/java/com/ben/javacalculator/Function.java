@@ -8,30 +8,31 @@ import java.util.stream.Collectors;
  * made up of Expressions with infinite recursiveness
  * @author Ben Rasmussen
  */
-public class Function extends FunctionPart{
-	private ArrayListMod<FunctionPart> innerParts;
-	private boolean inverse, carrot;
+public class Function extends ArrayListMod<FunctionPart> implements FunctionPart{
+	private boolean inverse, carrot, numerator, factor;
 	private Function power;
 
 	public Function() {
 		super();
+		numerator = false;
+		factor = false;
 		carrot = false;
 		inverse = false;
-		innerParts = new ArrayListMod<FunctionPart>();
 	}
 
 	public Function(Expression expression) {
 		this();
-		innerParts.add(expression);
+		super.add(expression);
 	}
 
 	public Function(ArrayListMod<FunctionPart> f) {
 		super();
-		innerParts = f;
+		super.addAll(f);
 	}
 
 	public Function(Function g) {
-		innerParts = g.getInnerParts();
+		this();
+		super.addAll(g);
 		inverse = g.isInverse();
 		numerator = g.isNumerator();
 		factor = g.isFactor();
@@ -44,17 +45,10 @@ public class Function extends FunctionPart{
 		this(StringParser.getGroupFromString(text));
 	}
 
-	public Function performTask() {
-		if (task.equals("d/dx")) {
-			return new Function(calcDerivative()).simplify();
-		} else {
-			return new Function("" + new Function(this).calcValue());
-		}
-	}
 	public ArrayListMod<String> getDimensions() {
 		ArrayListMod<String> vars = new ArrayListMod<>();
 
-		for (FunctionPart f: innerParts) {
+		for (FunctionPart f: this) {
 			vars.addAll(f.getDimensions());
 		}
 
@@ -69,7 +63,7 @@ public class Function extends FunctionPart{
 	public boolean isAlgebraic() {
 		boolean algebraic = false;
 
-		for (FunctionPart f: innerParts)
+		for (FunctionPart f: this)
 			algebraic = f.isAlgebraic();
 
 		return algebraic;
@@ -79,25 +73,21 @@ public class Function extends FunctionPart{
 		return CalculusEngine.calcDerivative(this);
 	}
 
-	public String calcValue() {
-		return calcValue("x=" + Main.variables[(int)'x']);
-	}
-
 	public String calcValue(String input) {
 		double value = 0;
 		boolean error = false, nextCheck = false;
 		String str = "";
 
-		for (int i = 0;i < innerParts.size(); i++) {
+		for (int i = 0;i < super.size(); i++) {
 			try {
-				double first = Double.parseDouble(innerParts.get(i).calcValue(input));
+				double first = Double.parseDouble(super.get(i).calcValue(input));
 				double second = 0;
-				if (i < innerParts.size() - 1)
-					second = Double.parseDouble(innerParts.get(i + 1).calcValue(input));
-				if (innerParts.get(i).isFactor()) {
+				if (i < super.size() - 1)
+					second = Double.parseDouble(super.get(i + 1).calcValue(input));
+				if (super.get(i).isFactor()) {
 					value += (first * second);
 					nextCheck = true;
-				} else if (innerParts.get(i).isNumerator()) {
+				} else if (super.get(i).isNumerator()) {
 					value += (first / second);
 					nextCheck = true;
 				} else {
@@ -106,7 +96,7 @@ public class Function extends FunctionPart{
 					nextCheck = false;
 				}
 			} catch (NumberFormatException n) {
-				str += value + innerParts.get(i).toString();
+				str += value + super.get(i).toString();
 				error = true;
 				value = 0;
 			}
@@ -138,23 +128,6 @@ public class Function extends FunctionPart{
 		}
 	}
 
-	public void add(FunctionPart object) {
-		innerParts.add(object);
-	}
-
-	public void add(ArrayListMod<FunctionPart> objects) {
-		for (FunctionPart f: objects)
-			innerParts.add(f);
-	}
-
-	public ArrayListMod<FunctionPart> getInnerParts() {
-		return innerParts;
-	}
-
-	public void setInnerParts(ArrayListMod<FunctionPart> innerParts) {
-		this.innerParts = innerParts;
-	}
-
 	public boolean isInverse() {
 		return inverse;
 	}
@@ -179,18 +152,38 @@ public class Function extends FunctionPart{
 		this.power = power;
 	}
 
+	@Override
+	public boolean isNumerator() {
+		return numerator;
+	}
+
+	@Override
+	public void setNumerator(boolean numerator) {
+		this.numerator = numerator;
+	}
+
+	@Override
+	public boolean isFactor() {
+		return factor;
+	}
+
+	@Override
+	public void setFactor(boolean factor) {
+		this.factor = factor;
+	}
+
 	public Function simplify() {
 		Function simplification = new Function();
 
-		for (FunctionPart ip: innerParts) {
+		for (FunctionPart ip: this) {
 			if (ip.getClass().equals(Expression.class)) {
 				Expression e = ((Expression)ip);
 				if (!(e.isRegularFunction() && e.getValue() == 1))
 					simplification.add(e);
 			} else {
 				Function g = ((Function)ip);
-				if (g.getInnerParts().size() == 1) {
-					FunctionPart f = g.getInnerParts().get(0);
+				if (g.size() == 1) {
+					FunctionPart f = g.get(0);
 					if (f.getClass().equals(Expression.class)) {
 						if (!(((Expression) f).isRegularFunction() && ((Expression) f).getValue() == 1)) {
 							f.setFactor(g.isFactor());
@@ -203,12 +196,12 @@ public class Function extends FunctionPart{
 					} else
 						simplification.add(f);
 				} else
-					simplification.add(g.simplify());
+					simplification.addAll(g);
 			}
 		}
 
-		if (innerParts.size() == 1 && innerParts.get(0).getClass().equals(Function.class))
-			innerParts = new ArrayListMod<FunctionPart>(((Function)innerParts.get(0)).getInnerParts());
+		//if (super.size() == 1 && super.get(0).getClass().equals(Function.class))
+			//this(new ArrayListMod<FunctionPart>((super.get(0))));
 
 		return simplification;
 	}
@@ -217,10 +210,7 @@ public class Function extends FunctionPart{
 	public String toString() {
 		String str = "";
 
-		if (hasTask())
-			str += task + "(";
-
-		for (FunctionPart o: innerParts) {
+		for (FunctionPart o: this) {
 			String temp = o.toString();
 
 			if (str.length() > 0) {
@@ -266,13 +256,6 @@ public class Function extends FunctionPart{
 		if (str.equals(""))
 			str += "1";
 
-		if (hasTask())
-			str += ")";
-
 		return str;
-	}
-
-	public ArrayListMod<FunctionPart> toArrayListMod() {
-		return new ArrayListMod<FunctionPart>(this);
 	}
 }

@@ -1,6 +1,8 @@
 package com.ben.javacalculator;
 
+import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Class containing as many Points needed
@@ -10,22 +12,21 @@ import java.awt.*;
  */
 public class Plot {
 	private ArrayListMod<Point> curve;
-	private Function function;
-	private Graph graph;
+	private Equation function;
+	private HashMap<String, VariableBound> windowSettings;
 	private boolean enabled, threeDimensional;
 
-	public Plot(Function function, Graph graph) {
+	public Plot(Equation function, HashMap<String, VariableBound> windowSettings) {
 		this.function = function;
-		this.graph = graph;
+		this.windowSettings = windowSettings;
 		this.curve = new ArrayListMod<>();
 		this.enabled = true;
-		this.threeDimensional = function.getDimensions().size() == 2;
+		this.threeDimensional = function.getFunctionOf().getDimensions().size() == 2;
 		calcCurve();
 	}
 
 	public Plot(Plot p) {
 		function = p.getFunction();
-		graph = p.getGraph();
 		curve = p.getCurve();
 		enabled = p.isEnabled();
 	}
@@ -33,15 +34,20 @@ public class Plot {
 	public void calcCurve() {
 		curve.clear();
 		if (threeDimensional) {
-			for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
+			/*for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
 				for (double y = getGraph().getBottomBound(); y <= graph.getTopBound(); y += .0001) {
 					curve.add(new Point(x, y, Double.parseDouble(
-							function.calcValue("x=" + Double.toString(x) + ",y=" + Double.toString(y)))));
+							function.getRightSide().calcValue("x=" + Double.toString(x) + ",y=" + Double.toString(y)))));
 				}
-			}
+			}*/
 		} else {
-			for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += .0001) {
-				Point newPoint = new Point(x, Double.parseDouble(function.calcValue("x=" + Double.toString(x))));
+			for (double i = windowSettings.get(function.getInTermsOf()).getLowerBound();
+				 i <= windowSettings.get(function.getInTermsOf()).getUpperBound(); i += .0001) {
+				Point newPoint;
+				if (function.getInTermsOf().equals("y"))
+					newPoint = new Point(i, Double.parseDouble(function.getFunctionOf().calcValue("x=" + Double.toString(i))));
+				else
+					newPoint = new Point(Double.parseDouble(function.getFunctionOf().calcValue("y=" + Double.toString(i))),i);
 				curve.add(newPoint);
 			}
 		}
@@ -50,10 +56,10 @@ public class Plot {
 	public ArrayListMod<Point> getTablePoints() {
 		ArrayListMod<Point> tablePoints = new ArrayListMod<Point>();
 
-		for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += graph.getxScale()) {
-			Point newPoint = new Point(x, Double.parseDouble(function.calcValue("x=" + Double.toString(x))));
+		/*for (double x = graph.getLeftBound(); x <= graph.getRightBound(); x += graph.getxScale()) {
+			Point newPoint = new Point(x, Double.parseDouble(function.getRightSide().calcValue("x=" + Double.toString(x))));
 			tablePoints.add(newPoint);
-		}
+		}*/
 
 		return tablePoints;
 	}
@@ -71,16 +77,12 @@ public class Plot {
 		this.curve = curve;
 	}
 
-	public Function getFunction() {
+	public Equation getFunction() {
 		return function;
 	}
 
-	public void setFunction(Function function) {
+	public void setFunction(Equation function) {
 		this.function = function;
-	}
-
-	public Graph getGraph() {
-		return graph;
 	}
 
 	public boolean isEnabled() {
@@ -89,10 +91,5 @@ public class Plot {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
-	}
-
-	public void setGraph(Graph graph) {
-		this.graph = graph;
-		calcCurve();
 	}
 }
